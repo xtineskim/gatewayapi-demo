@@ -1,6 +1,7 @@
 # K8 Gateway API Demo ⛩️
 
 This repo is dedicated to showcasing the [Gateway API](https://gateway-api.sigs.k8s.io/).
+This material was created for the co-located event ServiceMesh Con for KubeCon NA 2022 [talk](https://www.youtube.com/watch?v=ZcUn1tOixsU) that I delivered!
 
 ---
 **Content**
@@ -10,6 +11,7 @@ This repo is dedicated to showcasing the [Gateway API](https://gateway-api.sigs.
     - [1 - Prefix match and header edit](#1---prefix-match-and-header-edit)
     - [2 - Traffic Split](#2---traffic-split)
     - [3 - Add a new Gateway](#3---add-a-new-gateway)
+    - [Resources](#resources)
 
 ---
 ### Pre requisites
@@ -95,10 +97,20 @@ curl -s -I -HHost:httpbin.example.com "<YOUR_EXTERNAL_IP>/get"
 To try out another Gateway Controller (in this example, GKE L7 Load Balancer), you just need to instantiate your new 
 Gateway with the appropriate `gatewayClassName`.
 
-In the [`3-newGateway/`](./3-newGateway/) directory, the `gateway.yaml` contains the new GKE L7 LB, and also edits the existing `HTTPRoute` to allow traffic to flow from the new Gateway to `httpbin`.
+In the [`3-newGateway/`](./3-newGateway/) directory, the `gateway.yaml` contains the new GKE L7 LB. If you look at the [`httproute`](./3-Gateway/httproute.yaml), note the new entry in the `parentRefs` to allow traffic to flow from the new Gateway (in a different namespace) to the `httpbin` service.
 
+First create a new namespace for the GKE L7
+```
+kubectl create ns gke-ingress
+```
+Create the new Gateway, and deploy the edited HTTPRoute
 ```
 kubectl apply -f gatewayapi-demo/3-newGateway/gateway.yaml
+kubectl apply -f gatewayapi-demo/3-newGateway/httproute.yaml
 ```
 
-This material was created for the co-located event ServiceMesh Con for KubeCon NA 2022 [talk](https://www.youtube.com/watch?v=ZcUn1tOixsU) that I delivered!
+If you get the EXTERNAL_IP of your Gateways, you will now be able to interact with both Gateways and access the `httpbin` app!
+
+### Resources
+
+https://gateway-api.sigs.k8s.io/
